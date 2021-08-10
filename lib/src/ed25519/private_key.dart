@@ -8,10 +8,18 @@ class PrivateKey {
   PublicKey toPublic() {
     throw UnimplementedError();
   }
+
+  String hex() {
+    throw UnimplementedError();
+  }
 }
 
 class PublicKey {
   final Uint8List bytes;
 
   PublicKey(this.bytes);
+
+  String hex() {
+    throw UnimplementedError();
+  }
 }
