@@ -1,6 +1,8 @@
 import 'package:monero_jsonrpc/src/address/public_key.dart';
 import 'package:ninja_ed25519/ninja_ed25519.dart' as ed25519;
 
+export 'public_key.dart';
+
 class PrivateKey {
   final ed25519.PrivateKey privateSpendKey;
   final ed25519.PrivateKey privateViewKey;
