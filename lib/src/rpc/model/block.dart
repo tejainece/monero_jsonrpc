@@ -39,13 +39,6 @@ class BlockHeader {
   /// The unix time at which the block was recorded into the blockchain.
   final DateTime timestamp;
 
-  /// General RPC error code. "OK" means everything looks good.
-  final String status;
-
-  /// States if the result is obtained using the bootstrap mode, and is therefore
-  /// not trusted (true), or when the daemon is fully synced (false).
-  final bool untrusted;
-
   BlockHeader(
       {required this.blockSize,
       required this.depth,
@@ -59,35 +52,49 @@ class BlockHeader {
       required this.orphanStatus,
       required this.prevHash,
       required this.reward,
-      required this.timestamp,
-      required this.status,
-      required this.untrusted});
+      required this.timestamp});
+
+  Map<String, dynamic> toJson() => {
+        'block_size': blockSize,
+        'depth': depth,
+        'difficulty': difficulty,
+        'hash': hash,
+        'height': height,
+        'major_version': majorVersion,
+        'minor_version': minorVersion,
+        'nonce': nonce,
+        'num_txes': numTxes,
+        'orphan_status': orphanStatus,
+        'prev_hash': prevHash,
+        'reward': reward,
+        'timestamp': timestamp.toUtc().millisecondsSinceEpoch ~/ 1000,
+      };
 
   static BlockHeader fromMap(Map map) => BlockHeader(
-      blockSize: map['block_size'],
-      depth: map['depth'],
-      difficulty: map['difficulty'],
-      hash: map['hash'],
-      height: map['height'],
-      majorVersion: map['major_version'],
-      minorVersion: map['minor_version'],
-      nonce: map['nonce'],
-      numTxes: map['num_txes'],
-      orphanStatus: map['orphan_status'],
-      prevHash: map['prev_hash'],
-      reward: map['reward'],
-      timestamp: DateTime.fromMillisecondsSinceEpoch(map['timestamp'] * 1000,
-          isUtc: true),
-      status: map['status'],
-      untrusted: map['untrusted']);
+        blockSize: map['block_size'],
+        depth: map['depth'],
+        difficulty: map['difficulty'],
+        hash: map['hash'],
+        height: map['height'],
+        majorVersion: map['major_version'],
+        minorVersion: map['minor_version'],
+        nonce: map['nonce'],
+        numTxes: map['num_txes'],
+        orphanStatus: map['orphan_status'],
+        prevHash: map['prev_hash'],
+        reward: map['reward'],
+        timestamp: DateTime.fromMillisecondsSinceEpoch(map['timestamp'] * 1000,
+            isUtc: true),
+      );
 }
 
 class Block {
+  /// Hexadecimal blob of block information.
   final String blob;
+
+  /// A structure containing block header information.
   final BlockHeader blockHeader;
   /*
-  blob - string; Hexadecimal blob of block information.
-block_header - A structure containing block header information. See get_last_block_header.
 json - json string; JSON formatted block details:
 major_version - Same as in block header.
 minor_version - Same as in block header.
@@ -112,7 +119,15 @@ untrusted - boolean; States if the result is obtained using the bootstrap mode, 
    */
   Block({required this.blob, required this.blockHeader});
 
+  Map<String, dynamic> toJson() => {
+        'blob': blob,
+        'block_header': blockHeader,
+      };
+
   static Block fromMap(Map map) {
-    return Block(blob: map['blob'], blockHeader: map['block_header']);
+    return Block(
+      blob: map['blob'],
+      blockHeader: BlockHeader.fromMap(map['block_header']),
+    );
   }
 }
