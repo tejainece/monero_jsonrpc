@@ -6,9 +6,12 @@ version: 1.0.0
 environment:
   sdk: '>=2.12.0 <3.0.0'
 
-# dependencies:
-#   path: ^1.8.0
+dependencies:
+  json_rpc_client: ^1.0.0
+  ninja_ed25519: ^1.0.0
+  sha3: ^0.2.0
+  bs58check: ^1.0.2
 
 dev_dependencies:
-  pedantic: ^1.10.0
-  test: ^1.16.0
+  pedantic: ^1.11.1
+  test: ^1.17.10
