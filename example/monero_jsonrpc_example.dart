@@ -10,4 +10,5 @@ Future<void> main() async {
   final block = await rpc.getBlockByHeight(BigInt.from(901769));
   // print(jsonEncode(block.toJson()));
   final tx = await rpc.getTransactions(block.txHashes, decodeAsJson: true);
+  print(tx.txAsJson.first);
 }
