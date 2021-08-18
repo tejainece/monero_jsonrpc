@@ -1,3 +1,5 @@
+import 'package:monero_jsonrpc/src/rpc/model/model.dart';
+
 class BlockHeader {
   /// The block size in bytes.
   final int blockSize;
@@ -83,8 +85,7 @@ class BlockHeader {
         orphanStatus: map['orphan_status'],
         prevHash: map['prev_hash'],
         reward: map['reward'],
-        timestamp: DateTime.fromMillisecondsSinceEpoch(map['timestamp'] * 1000,
-            isUtc: true),
+        timestamp: fromTimestamp(map['timestamp']),
       );
 }
 
@@ -113,21 +114,25 @@ target -
 key -
 extra - Usually called the "transaction ID" but can be used to include any random 32 byte/64 character hex string.
 signatures - Contain signatures of tx signers. Coinbased txs do not have signatures.
-tx_hashes - List of hashes of non-coinbase transactions in the block. If there are no other transactions, this will be an empty list.
-status - string; General RPC error code. "OK" means everything looks good.
-untrusted - boolean; States if the result is obtained using the bootstrap mode, and is therefore not trusted (true), or when the daemon is fully synced (false).
    */
-  Block({required this.blob, required this.blockHeader});
+  /// List of hashes of non-coinbase transactions in the block. If there are no
+  /// other transactions, this will be an empty list.
+  final List<String> txHashes;
+
+  Block(
+      {required this.blob, required this.blockHeader, required this.txHashes});
 
   Map<String, dynamic> toJson() => {
         'blob': blob,
         'block_header': blockHeader,
+        'tx_hashes': txHashes,
       };
 
   static Block fromMap(Map map) {
     return Block(
       blob: map['blob'],
       blockHeader: BlockHeader.fromMap(map['block_header']),
+      txHashes: (map['tx_hashes'] as List).cast<String>(),
     );
   }
 }

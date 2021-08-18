@@ -1,4 +1,77 @@
+import 'dart:convert';
 import 'dart:typed_data';
+
+import 'package:monero_jsonrpc/src/rpc/model/model.dart';
+
+class GetTransactionResponse {
+  final String topHash;
+  final List<TransactionDetails> txs;
+  final List<String> txsAsHex;
+  final List<Map> txAsJson;
+
+  GetTransactionResponse(
+      {required this.topHash,
+      required this.txs,
+      required this.txsAsHex,
+      required this.txAsJson});
+
+  static GetTransactionResponse fromMap(Map map) {
+    return GetTransactionResponse(
+      topHash: map['top_hash'],
+      txs: TransactionDetails.fromList(map['txs'] as List),
+      txsAsHex: (map['txs_as_hex'] as List).cast<String>(),
+      txAsJson: (map['txs_as_json'] as List)
+          .cast<String>()
+          .map(jsonDecode)
+          .cast<Map>()
+          .toList(),
+    );
+  }
+}
+
+class TransactionDetails {
+  final String asHex;
+  final Transaction tx;
+  final int blockHeight;
+  final DateTime blockTimestamp;
+  final bool doubleSpendSeen;
+  final bool inPool;
+  final List<int> outputIndices;
+  final String prunableAsHex;
+  final String prunableHash;
+  final String prunedAsHex;
+  final String txHash;
+
+  TransactionDetails(
+      {required this.asHex,
+      required this.tx,
+      required this.blockHeight,
+      required this.blockTimestamp,
+      required this.doubleSpendSeen,
+      required this.inPool,
+      required this.outputIndices,
+      required this.prunableAsHex,
+      required this.prunableHash,
+      required this.prunedAsHex,
+      required this.txHash});
+
+  static TransactionDetails fromMap(Map map) => TransactionDetails(
+        asHex: map['as_hex'],
+        tx: Transaction.fromMap(jsonDecode(map['as_json'])),
+        blockHeight: map['block_height'],
+        blockTimestamp: fromTimestamp(map['block_timestamp']),
+        doubleSpendSeen: map['double_spend_seen'],
+        inPool: map['in_pool'],
+        outputIndices: (map['output_indices'] as List).cast<int>(),
+        prunableAsHex: map['prunable_as_hex'],
+        prunableHash: map['prunable_hash'],
+        prunedAsHex: map['pruned_as_hex'],
+        txHash: map['tx_hash'],
+      );
+
+  static List<TransactionDetails> fromList(List list) =>
+      list.cast<Map>().map(fromMap).toList();
+}
 
 class Transaction {
   final int version;
@@ -27,7 +100,7 @@ class Transaction {
         version: map['version'],
         unlockTime: map['unlock_time'],
         vouts: Vout.fromList(map['vout'] as List),
-        extra: map['extra'],
+        extra: Uint8List.fromList((map['extra'] as List).cast<int>()),
       );
 
   static List<Transaction> fromList(List list) =>
