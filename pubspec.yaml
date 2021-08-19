@@ -8,7 +8,7 @@ environment:
 
 dependencies:
   json_rpc_client: ^1.0.2
-  ninja_ed25519: ^1.0.0
+  ninja_ed25519: ^1.0.1
   sha3: ^0.2.0
   bs58check: ^1.0.2
 

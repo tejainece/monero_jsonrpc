@@ -79,13 +79,14 @@ class Transaction {
   // TODO vin
   final List<Vout> vouts;
   final Uint8List extra;
-  // TODO signatures
+  final RctSignatures rctSignatures;
 
   Transaction({
     required this.version,
     required this.unlockTime,
     required this.vouts,
     required this.extra,
+    required this.rctSignatures,
   });
 
   Map<String, dynamic> toJson() => {
@@ -94,6 +95,7 @@ class Transaction {
         // TODO vin
         'vout': vouts,
         'extra': extra,
+        'rctSignatures': rctSignatures,
       };
 
   static Transaction fromMap(Map map) => Transaction(
@@ -101,6 +103,7 @@ class Transaction {
         unlockTime: map['unlock_time'],
         vouts: Vout.fromList(map['vout'] as List),
         extra: Uint8List.fromList((map['extra'] as List).cast<int>()),
+        rctSignatures: RctSignatures.fromMap(map['rct_signatures']),
       );
 
   static List<Transaction> fromList(List list) =>
@@ -123,5 +126,43 @@ class Vout {
       Vout(amount: map['amount'], key: map['target']['key']);
 
   static List<Vout> fromList(List list) =>
+      list.cast<Map>().map(fromMap).toList();
+}
+
+class RctSignatures {
+  final int type;
+  final int txnFee;
+  final List<ECDHInfo> ecdhInfo;
+  final List<String> outPk;
+  RctSignatures(
+      {required this.type,
+      required this.txnFee,
+      required this.ecdhInfo,
+      required this.outPk});
+
+  Map<String, dynamic> toJson() => {
+        'type': type,
+        'txnFee': txnFee,
+        'ecdhInfo': ecdhInfo,
+        'outPk': outPk,
+      };
+
+  static RctSignatures fromMap(Map map) => RctSignatures(
+      type: map['type'],
+      txnFee: map['txnFee'],
+      ecdhInfo: ECDHInfo.fromList(map['ecdhInfo'] as List),
+      outPk: (map['outPk'] as List).cast<String>(),
+  );
+}
+
+class ECDHInfo {
+  final String amount;
+  ECDHInfo({required this.amount});
+
+  Map<String, dynamic> toJson() => {'amount': amount};
+
+  static ECDHInfo fromMap(Map map) => ECDHInfo(amount: map['amount']);
+
+  static List<ECDHInfo> fromList(List list) =>
       list.cast<Map>().map(fromMap).toList();
 }
