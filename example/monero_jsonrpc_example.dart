@@ -22,7 +22,7 @@ Future<void> search(GetTransactionResponse txs) async {
     print(addr);
 
     final R = ed25519.ExtendedGroupElement.fromHex(RHex);
-    ed25519.curve25519.scalarMultiplyAdd(a, b, c)
+    // ed25519.curve25519.scalarMultiplyAdd(a, b, c)
     // R.
     // ed25519.curve25519.
     // TODO
