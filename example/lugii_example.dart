@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:ninja/ninja.dart';
-import 'package:ninja_ed25519/ninja_ed25519.dart';
+import 'package:ninja_ed25519/ninja_ed25519.dart' hide PrivateKey, PublicKey;
 import 'package:ninja_ed25519/curve.dart';
 import 'package:monero_jsonrpc/monero_jsonrpc.dart';
 
@@ -19,7 +19,15 @@ void step1() {
   // a1d198629fadc698b48f33dc2e280301679ab2c75a76974fd185ba66ab8418cc
 }
 
+void address() {
+  final prvKey = PrivateKey.fromSpendHex(
+      'c595161ea20ccd8c692947c2d3ced471e9b13a18b150c881232794e8042bf107');
+  print(prvKey.privateSpendKey.keyAsHex);
+  print(prvKey.privateViewKey.keyAsHex);
+}
+
 void main() {
+  address();
   step1();
   // TODO
 }
