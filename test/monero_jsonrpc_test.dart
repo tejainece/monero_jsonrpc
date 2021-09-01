@@ -7,7 +7,6 @@ void main() {
       // Additional setup goes here.
     });
 
-    test('First Test', () {
-    });
+    test('First Test', () {});
   });
 }

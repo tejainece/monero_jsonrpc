@@ -148,11 +148,11 @@ class RctSignatures {
       };
 
   static RctSignatures fromMap(Map map) => RctSignatures(
-      type: map['type'],
-      txnFee: map['txnFee'],
-      ecdhInfo: ECDHInfo.fromList(map['ecdhInfo'] as List),
-      outPk: (map['outPk'] as List).cast<String>(),
-  );
+        type: map['type'],
+        txnFee: map['txnFee'],
+        ecdhInfo: ECDHInfo.fromList(map['ecdhInfo'] as List),
+        outPk: (map['outPk'] as List).cast<String>(),
+      );
 }
 
 class ECDHInfo {

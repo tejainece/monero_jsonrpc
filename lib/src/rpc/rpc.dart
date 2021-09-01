@@ -51,7 +51,7 @@ class XMRRPC {
       throw resp;
     }
     final json = jsonDecode(resp.body);
-    if(json['status'] != 'OK') {
+    if (json['status'] != 'OK') {
       throw Exception('invalid status: ${json['status']}');
     }
     print(json);
