@@ -1,10 +1,12 @@
 import 'dart:typed_data';
 
+import 'package:monero_jsonrpc/src/util/keccak.dart';
+import 'package:monero_jsonrpc/src/util/write_varint.dart';
 import 'package:ninja/ninja.dart';
 import 'package:ninja_ed25519/curve.dart';
 import 'package:monero_jsonrpc/monero_jsonrpc.dart';
 
-void step1() {
+Point25519 computeD() {
   final AStr =
       '6bb8297dc3b54407ac78ffa4efa4afbe5f1806e5e41aa56ae98c2fe53032bb4b';
   final A = Point25519.fromHex(AStr);
@@ -16,6 +18,7 @@ void step1() {
   print(D.asCompressedHex(endian: Endian.big));
   // a1d198629fadc698b48f33dc2e280301679ab2c75a76974fd185ba66ab8418cc
   print('----------');
+  return D;
 }
 
 void step2() {
@@ -52,10 +55,19 @@ void computeR() {
   print('----------');
 }
 
+void computeF(Point25519 D, int outputIndex) {
+  final preHash =
+      Uint8List.fromList(D.asBytes.toList()..addAll(writeVarInt(outputIndex)));
+  final bytes = keccak256(preHash);
+  final f = scReduce32(bytes.asBigInt(endian: Endian.little));
+  print(f.asBytes(outLen: 32, endian: Endian.little).toHex(outLen: 64));
+}
+
 void main() {
   address();
   computeR();
-  step1();
+  final D = computeD();
+  computeF(D, 0);
   step2();
   // TODO
 }

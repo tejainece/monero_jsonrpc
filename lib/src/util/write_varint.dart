@@ -1,7 +1,10 @@
 import 'dart:typed_data';
 
 Uint8List writeVarInt(int value) {
-  final length = (value.bitLength / 7).ceil();
+  int length = (value.bitLength / 7).ceil();
+  if(length == 0) {
+    length = 1;
+  }
   final ret = Uint8List(length);
   for (int i = 0; i < length - 1; i++) {
     ret[i] = 0x80 | value & 0x7F;
