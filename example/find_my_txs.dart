@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:json_rpc_client/json_rpc_client.dart';
 import 'package:monero_jsonrpc/monero_jsonrpc.dart';
 import 'package:monero_jsonrpc/src/rpc/model/model.dart';
@@ -15,17 +13,16 @@ Future<void> search(GetTransactionResponse txs) async {
   if (txs.txs.isEmpty) return;
 
   final txDet = txs.txs[0];
-  for (int i = 0; i < txDet.tx.vouts.length; i++) {
-    final RHex = txDet.tx.rctSignatures.outPk[i];
-    final addr = txDet.tx.vouts[i].key;
+  for (int voutIndex = 0; voutIndex < txDet.tx.vouts.length; voutIndex++) {
+    final RHex = txDet.tx.rctSignatures.outPk[voutIndex];
+    final addr = txDet.tx.vouts[voutIndex].key;
     print(RHex);
     print(addr);
 
-    final R = ed25519.ExtendedGroupElement.fromHex(RHex);
-    // ed25519.curve25519.scalarMultiplyAdd(a, b, c)
-    // R.
-    // ed25519.curve25519.
-    // TODO
+    final R = ed25519.Point25519.fromHex(RHex);
+    if(key.isMyVout(R, voutIndex, addr)) {
+      print('yes');
+    }
   }
 }
 
