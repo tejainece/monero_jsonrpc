@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-Uint8List writeVarInt(int value) {
+Uint8List encodeVarInt(int value) {
   int length = (value.bitLength / 7).ceil();
   if(length == 0) {
     length = 1;

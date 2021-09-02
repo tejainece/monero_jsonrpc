@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:monero_jsonrpc/src/util/write_varint.dart';
 import 'package:ninja/ninja.dart';
 
 import 'package:monero_jsonrpc/src/address/public_key.dart';
@@ -42,6 +43,20 @@ class PrivateKey {
 
   String getAddress({Network network = Network.mainnet}) =>
       toPublic.getAddress(network: network);
+
+  bool isMyVout(Point25519 R, int outputIndex, String voutAddress) {
+    final Di = R
+        .multiplyScalar(privateViewKey.keyAsBigInt)
+        .multiplyScalar(BigInt.from(8));
+    final fiPreHash = Uint8List.fromList(
+        Di.asBytes.toList()..addAll(encodeVarInt(outputIndex)));
+    final fiBytes = keccak256(fiPreHash);
+    final fi = scReduce32(fiBytes.asBigInt(endian: Endian.little));
+    final Fi = curve25519.scalarMultiplyBase(fi);
+    final Pi = Fi + publicSpendKey.asPoint;
+    final PiHex = Pi.asCompressedHex(endian: Endian.big);
+    return PiHex == voutAddress;
+  }
 }
 
 BigInt scReduce32(BigInt input) {

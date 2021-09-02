@@ -10,7 +10,7 @@ class TestCase {
   TestCase({required this.input, required this.output});
 
   void perform() {
-    final actual = writeVarInt(input);
+    final actual = encodeVarInt(input);
     final expected = BigInt.parse(output).asBytes();
     expect(actual, expected);
   }
