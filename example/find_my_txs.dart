@@ -1,3 +1,5 @@
+import 'package:ninja/ninja.dart';
+
 import 'package:json_rpc_client/json_rpc_client.dart';
 import 'package:monero_jsonrpc/monero_jsonrpc.dart';
 import 'package:monero_jsonrpc/src/rpc/model/model.dart';
@@ -13,6 +15,7 @@ Future<void> search(GetTransactionResponse txs) async {
   if (txs.txs.isEmpty) return;
 
   final txDet = txs.txs[0];
+  print(txDet.tx.extra.toHex());
   for (int voutIndex = 0; voutIndex < txDet.tx.vouts.length; voutIndex++) {
     final RHex = txDet.tx.rctSignatures.outPk[voutIndex];
     final addr = txDet.tx.vouts[voutIndex].key;
