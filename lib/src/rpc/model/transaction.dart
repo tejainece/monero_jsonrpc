@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:monero_jsonrpc/src/rpc/model/model.dart';
+import 'package:ninja_ed25519/curve.dart';
 
 class GetTransactionResponse {
   final String topHash;
@@ -98,6 +99,51 @@ class Transaction {
         'rctSignatures': rctSignatures,
       };
 
+  Iterable<int>? findTagInExtra(int tag) {
+    Iterable<int> iterable = extra;
+    while (iterable.isNotEmpty) {
+      final curTag = extra.first;
+      iterable = iterable.skip(1);
+      if (curTag == tag) {
+        // we have found a match
+        return iterable;
+      }
+      int bytesToSkip = 0;
+      switch (curTag) {
+        case 0x00:
+          bytesToSkip = 1;
+          break;
+        case 0x01:
+          bytesToSkip = 32;
+          break;
+        case 0x02:
+          bytesToSkip = iterable.first;
+          iterable.skip(1);
+          break;
+        case 0x04:
+          bytesToSkip = iterable.first * 32;
+          iterable.skip(1);
+          break;
+        default:
+          throw Exception('unknown extra tag $curTag found');
+      }
+      iterable = iterable.skip(bytesToSkip);
+    }
+    return null;
+  }
+
+  Point25519? getTxPublicKey() {
+    final data = findTagInExtra(0x01);
+    if(data == null) {
+      return null;
+    }
+    if(data.length < 32) {
+      throw Exception('invalid extras field');
+    }
+    final list = data.take(32).toList();
+    return Point25519.fromBytes(list);
+  }
+
   static Transaction fromMap(Map map) => Transaction(
         version: map['version'],
         unlockTime: map['unlock_time'],
@@ -165,4 +211,15 @@ class ECDHInfo {
 
   static List<ECDHInfo> fromList(List list) =>
       list.cast<Map>().map(fromMap).toList();
+}
+
+class ExtraTag {
+  final int tag;
+  final String name;
+  const ExtraTag(this.tag, this.name);
+
+  static const padding = ExtraTag(0x00, 'Padding');
+  static const publicKey = ExtraTag(0x01, 'Public key');
+  static const nonce = ExtraTag(0x02, 'Nonce');
+  static const additionalPublicKey = ExtraTag(0x04, 'Additional public keys');
 }
