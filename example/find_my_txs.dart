@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:ninja/ninja.dart';
 
 import 'package:json_rpc_client/json_rpc_client.dart';
@@ -15,14 +17,12 @@ Future<void> search(GetTransactionResponse txs) async {
   if (txs.txs.isEmpty) return;
 
   final txDet = txs.txs[0];
-  print(txDet.tx.extra.toHex());
+  final ed25519.Point25519 R = txDet.tx.getTxPublicKey()!;
+  print('TX public key: ' + R.asCompressedHex(endian: Endian.big));
   for (int voutIndex = 0; voutIndex < txDet.tx.vouts.length; voutIndex++) {
-    final RHex = txDet.tx.rctSignatures.outPk[voutIndex];
     final addr = txDet.tx.vouts[voutIndex].key;
-    print(RHex);
-    print(addr);
+    print('Stealth address: ' + addr);
 
-    final R = ed25519.Point25519.fromHex(RHex);
     if(key.isMyVout(R, voutIndex, addr)) {
       print('yes');
     }
@@ -31,8 +31,6 @@ Future<void> search(GetTransactionResponse txs) async {
 
 Future<void> main() async {
   final rpc = XMRRPC(JRPCHttpClient(RPCUri.stagenet));
-  final height = (await rpc.getBlockCount()) - BigInt.from(10);
-  print(height);
   final block = await rpc.getBlockByHeight(BigInt.from(896162));
   // print(jsonEncode(block.toJson()));
   final txs = await rpc.getTransactions(block.txHashes, decodeAsJson: true);

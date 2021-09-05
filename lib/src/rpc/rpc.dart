@@ -54,7 +54,7 @@ class XMRRPC {
     if (json['status'] != 'OK') {
       throw Exception('invalid status: ${json['status']}');
     }
-    print(json);
+    // print(json);
     return GetTransactionResponse.fromMap(json);
   }
 }
