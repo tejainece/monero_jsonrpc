@@ -59,6 +59,7 @@ class PrivateKey {
   }
 
   /// https://monero.stackexchange.com/questions/11272/where-is-the-encrypted-mask-value
+  /// https://github.com/monero-project/monero/commit/7d375981584e5ddac4ea6ad8879e2211d465b79d
   ///
   BigInt getAmount(Point25519 R, int outputIndex, List<int> commitment) {
     final Di = R
