@@ -81,14 +81,14 @@ BigInt scReduce32(BigInt input) {
 }
 
 List<int> xor8(List<int> a, List<int> b) {
-  if(a.length < 8) {
+  if (a.length < 8) {
     throw ArgumentError.value(a, 'a', 'should have at least 8 bytes');
   }
-  if(b.length < 8) {
+  if (b.length < 8) {
     throw ArgumentError.value(b, 'b', 'should have at least 8 bytes');
   }
   final ret = List<int>.filled(8, 0);
-  for(int i = 0; i < 8; i++) {
+  for (int i = 0; i < 8; i++) {
     ret[i] = a[i] ^ b[i];
   }
   return ret;

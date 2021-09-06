@@ -27,12 +27,11 @@ Future<void> search(GetTransactionResponse txs) async {
 
     if (key.isMyVout(R, voutIndex, addr)) {
       print('yes');
-      final amount = key.getAmount(
-          R,
-          voutIndex,
-          hexDecode(txDet.tx.rctSignatures.ecdhInfo[voutIndex].amount)
-              .reversed
-              .toList());
+      final amountTStr = txDet.tx.rctSignatures.ecdhInfo[voutIndex].amount;
+      print('amountT: $amountTStr');
+      final amountT =
+          hexDecode(amountTStr).toList();
+      final amount = key.getAmount(R, voutIndex, amountT);
       print(amount);
     }
   }
