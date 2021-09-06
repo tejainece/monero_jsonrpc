@@ -74,7 +74,7 @@ class PrivateKey {
     final uh = keccak256(Uint8List.fromList(unmasked));
     final ret = xor8(commitment, uh);
     print(ret.toHex());
-    return ret.asBigInt();
+    return ret.asBigInt(endian: Endian.little);
   }
 }
 

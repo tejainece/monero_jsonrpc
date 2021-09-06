@@ -11,7 +11,7 @@ void main() {
   int voutIndex = 0;
   final amountTStr = 'fd07426faae4a99f';
   print('amountT: $amountTStr');
-  final amountT = hexDecode(amountTStr).reversed.toList();
+  final amountT = hexDecode(amountTStr).toList();
   final amount = prvKey.getAmount(R, voutIndex, amountT);
   print(amount);
 }
