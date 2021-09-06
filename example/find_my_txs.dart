@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:ninja/ninja.dart';
+import 'package:ninja_hex/ninja_hex.dart';
 
 import 'package:json_rpc_client/json_rpc_client.dart';
 import 'package:monero_jsonrpc/monero_jsonrpc.dart';
@@ -23,8 +25,15 @@ Future<void> search(GetTransactionResponse txs) async {
     final addr = txDet.tx.vouts[voutIndex].key;
     print('Stealth address: ' + addr);
 
-    if(key.isMyVout(R, voutIndex, addr)) {
+    if (key.isMyVout(R, voutIndex, addr)) {
       print('yes');
+      final amount = key.getAmount(
+          R,
+          voutIndex,
+          hexDecode(txDet.tx.rctSignatures.ecdhInfo[voutIndex].amount)
+              .reversed
+              .toList());
+      print(amount);
     }
   }
 }
@@ -34,6 +43,5 @@ Future<void> main() async {
   final block = await rpc.getBlockByHeight(BigInt.from(896162));
   // print(jsonEncode(block.toJson()));
   final txs = await rpc.getTransactions(block.txHashes, decodeAsJson: true);
-  // print(jsonEncode(txs.txAsJson.first));
   await search(txs);
 }

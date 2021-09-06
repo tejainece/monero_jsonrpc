@@ -57,8 +57,38 @@ class PrivateKey {
     final PiHex = Pi.asCompressedHex(endian: Endian.big);
     return PiHex == voutAddress;
   }
+
+  /// https://monero.stackexchange.com/questions/11272/where-is-the-encrypted-mask-value
+  ///
+  BigInt getAmount(Point25519 R, int outputIndex, List<int> commitment) {
+    final Di = R
+        .multiplyScalar(privateViewKey.keyAsBigInt)
+        .multiplyScalar(BigInt.from(8));
+    final fiPreHash = Uint8List.fromList(
+        Di.asBytes.toList()..addAll(encodeVarInt(outputIndex)));
+    final fiBytes = keccak256(fiPreHash);
+    final unmasked = 'amount'.codeUnits.toList()..addAll(fiBytes);
+    final uh = keccak256(Uint8List.fromList(unmasked));
+    final ret = xor8(commitment, uh);
+    print(ret.toHex());
+    return ret.asBigInt();
+  }
 }
 
 BigInt scReduce32(BigInt input) {
   return input % Curve25519.l;
+}
+
+List<int> xor8(List<int> a, List<int> b) {
+  if(a.length < 8) {
+    throw ArgumentError.value(a, 'a', 'should have at least 8 bytes');
+  }
+  if(b.length < 8) {
+    throw ArgumentError.value(b, 'b', 'should have at least 8 bytes');
+  }
+  final ret = List<int>.filled(8, 0);
+  for(int i = 0; i < 8; i++) {
+    ret[i] = a[i] ^ b[i];
+  }
+  return ret;
 }
