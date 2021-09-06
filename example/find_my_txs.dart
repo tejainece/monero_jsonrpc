@@ -30,7 +30,7 @@ Future<void> search(GetTransactionResponse txs) async {
       final amountTStr = txDet.tx.rctSignatures.ecdhInfo[voutIndex].amount;
       print('amountT: $amountTStr');
       final amountT =
-          hexDecode(amountTStr).toList();
+          hexDecode(amountTStr).reversed.toList();
       final amount = key.getAmount(R, voutIndex, amountT);
       print(amount);
     }

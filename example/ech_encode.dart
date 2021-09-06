@@ -14,7 +14,7 @@ void main() {
       '9468b7a83b937c0a438a802c841183401d690f18742cfea6b9096f865ef84e02');
   int outputIndex = 0;
   final amount = BigInt.parse('1000000000000', radix: 10)
-      .asBytes(outLen: 8, endian: Endian.big);
+      .asBytes(outLen: 8, endian: Endian.little);
 
   final Di = R
       .multiplyScalar(prvKey.privateViewKey.keyAsBigInt)
@@ -22,10 +22,11 @@ void main() {
   final fiPreHash = Uint8List.fromList(
       Di.asBytes.toList()..addAll(encodeVarInt(outputIndex)));
   final fiBytes = keccak256(fiPreHash);
+  final fi = scReduce32(fiBytes.asBigInt(endian: Endian.little));
   final unmasked = 'amount'.codeUnits.toList()
-    ..addAll(fiBytes.reversed.toList());
+    ..addAll(fi.asBytes(outLen: 32, endian: Endian.little));
   final uh = keccak256(Uint8List.fromList(unmasked));
-  final ret = xor8(amount, uh.reversed.toList());
+  final ret = xor8(amount, uh.toList());
   print(ret.toHex());
   // fd07426faae4a99f
 }

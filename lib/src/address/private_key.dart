@@ -68,7 +68,9 @@ class PrivateKey {
     final fiPreHash = Uint8List.fromList(
         Di.asBytes.toList()..addAll(encodeVarInt(outputIndex)));
     final fiBytes = keccak256(fiPreHash);
-    final unmasked = 'amount'.codeUnits.toList()..addAll(fiBytes);
+    final fi = scReduce32(fiBytes.asBigInt(endian: Endian.little));
+    final unmasked = 'amount'.codeUnits.toList()
+      ..addAll(fi.asBytes(outLen: 32, endian: Endian.little));
     final uh = keccak256(Uint8List.fromList(unmasked));
     final ret = xor8(commitment, uh);
     print(ret.toHex());
