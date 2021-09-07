@@ -9,5 +9,5 @@ void main() {
   final voutAddress =
       '6cabaac48d3b9043525a703e9e5feb72132f69ea6deca9b4acf9228beb74cd8f';
   final R = Point25519.fromHex(RStr);
-  print(prvKey.isMyVout(R, 0, voutAddress));
+  print(prvKey.isVoutSentToMe(R, 0, voutAddress));
 }

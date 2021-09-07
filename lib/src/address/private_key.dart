@@ -44,7 +44,7 @@ class PrivateKey {
   String getAddress({Network network = Network.mainnet}) =>
       toPublic.getAddress(network: network);
 
-  bool isMyVout(Point25519 R, int outputIndex, String voutAddress) {
+  bool isVoutSentToMe(Point25519 R, int outputIndex, String voutAddress) {
     final Di = R
         .multiplyScalar(privateViewKey.keyAsBigInt)
         .multiplyScalar(BigInt.from(8));

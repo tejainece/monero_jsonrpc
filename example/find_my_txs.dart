@@ -25,12 +25,12 @@ Future<void> search(GetTransactionResponse txs) async {
     final addr = txDet.tx.vouts[voutIndex].key;
     print('Stealth address: ' + addr);
 
-    if (key.isMyVout(R, voutIndex, addr)) {
+    if (key.isVoutSentToMe(R, voutIndex, addr)) {
       print('yes');
       final amountTStr = txDet.tx.rctSignatures.ecdhInfo[voutIndex].amount;
       print('amountT: $amountTStr');
       final amountT =
-          hexDecode(amountTStr).reversed.toList();
+          hexDecode(amountTStr).toList();
       final amount = key.getAmount(R, voutIndex, amountT);
       print(amount);
     }
