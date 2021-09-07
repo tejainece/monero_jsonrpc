@@ -31,7 +31,7 @@ Future<void> search(GetTransactionResponse txs) async {
       print('amountT: $amountTStr');
       final amountT =
           hexDecode(amountTStr).toList();
-      final amount = key.getAmount(R, voutIndex, amountT);
+      final amount = key.decodeAmount(R, voutIndex, amountT);
       print(amount);
     }
   }

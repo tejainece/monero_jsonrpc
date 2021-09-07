@@ -12,6 +12,6 @@ void main() {
   final amountTStr = 'fd07426faae4a99f';
   print('amountT: $amountTStr');
   final amountT = hexDecode(amountTStr).toList();
-  final amount = prvKey.getAmount(R, voutIndex, amountT);
+  final amount = prvKey.decodeAmount(R, voutIndex, amountT);
   print(amount);
 }
