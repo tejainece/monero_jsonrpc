@@ -44,6 +44,7 @@ class PrivateKey {
   String getAddress({Network network = Network.mainnet}) =>
       toPublic.getAddress(network: network);
 
+  /// = Hs(8aR||i)
   BigInt computeTxSharedSecretFromTxPubKey(Point25519 R, int outputIndex) {
     final Di = R
         .multiplyScalar(privateViewKey.keyAsBigInt)
@@ -64,6 +65,7 @@ class PrivateKey {
   /// https://monero.stackexchange.com/questions/11272/where-is-the-encrypted-mask-value
   /// https://github.com/monero-project/monero/commit/7d375981584e5ddac4ea6ad8879e2211d465b79d
   /// https://monero.stackexchange.com/questions/12139/calculate-the-output-amount-using-mininero
+  /// amount = amountT XOR keccak256("amount" || Hs(8aR||i))
   BigInt decodeAmount(Point25519 R, int outputIndex, List<int> commitment) {
     final fi = computeTxSharedSecretFromTxPubKey(R, outputIndex);
     final unmasked = 'amount'.codeUnits.toList()
@@ -74,6 +76,7 @@ class PrivateKey {
     return ret.asBigInt(endian: Endian.little);
   }
 
+  /// amountT = amount XOR keccak256("amount" || Hs(8aR||i))
   String encodeAmountUsingTxPubKey(
       Point25519 R, int outputIndex, BigInt amount) {
     final fi = computeTxSharedSecretFromTxPubKey(R, outputIndex);

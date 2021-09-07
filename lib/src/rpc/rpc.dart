@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:json_rpc_client/json_rpc_client.dart';
 import 'package:monero_jsonrpc/src/rpc/model/block.dart';

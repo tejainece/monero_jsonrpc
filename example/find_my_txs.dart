@@ -1,14 +1,10 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:ninja/ninja.dart';
 import 'package:ninja_hex/ninja_hex.dart';
 
 import 'package:json_rpc_client/json_rpc_client.dart';
 import 'package:monero_jsonrpc/monero_jsonrpc.dart';
 import 'package:monero_jsonrpc/src/rpc/model/model.dart';
-
-import 'package:ninja_ed25519/ninja_ed25519.dart' as ed25519;
 import 'package:ninja_ed25519/curve.dart' as ed25519;
 
 final key = PrivateKey.fromHexes(
