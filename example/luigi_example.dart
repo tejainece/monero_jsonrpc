@@ -27,8 +27,8 @@ void address() {
   print('>>>>>> Compute address');
   final prvKey = PrivateKey.fromSpendHex(
       'c595161ea20ccd8c692947c2d3ced471e9b13a18b150c881232794e8042bf107');
-  print(prvKey.privateSpendKey.keyAsHex);
-  print(prvKey.privateViewKey.keyAsHex);
+  print(prvKey.privateSpendKeyHex);
+  print(prvKey.privateViewKeyHex);
   print(prvKey.publicSpendKeyHex);
   print(prvKey.publicViewKeyHex);
 }

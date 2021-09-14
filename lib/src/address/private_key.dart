@@ -10,44 +10,45 @@ import 'package:ninja_ed25519/ninja_ed25519.dart' as ed25519;
 export 'public_key.dart';
 
 class PrivateKey {
-  final ed25519.PrivateKey privateSpendKey;
-  final ed25519.PrivateKey privateViewKey;
-  late PublicKey public =
-      PublicKey(privateSpendKey.publicKey, privateViewKey.publicKey);
+  final ed25519.Scalar privateSpendKey;
+  final ed25519.Scalar privateViewKey;
+  late PublicKey publicKey = PublicKey(
+      ed25519.PublicKey(privateSpendKey.multiplyBase().asBytes),
+      ed25519.PublicKey(privateViewKey.multiplyBase().asBytes));
 
   factory PrivateKey.fromSpendHex(String spendHex) {
-    final spendKey = ed25519.PrivateKey.fromHex(spendHex);
-    final viewKey = ed25519.PrivateKey(
-        scReduce32(keccak256(spendKey.keyBytes).asBigInt(endian: Endian.little))
-            .asBytes(outLen: 32, endian: Endian.little));
+    final spendKey =
+        ed25519.Scalar.fromString(spendHex, radix: 16, endian: Endian.big);
+    final viewKey = ed25519.Scalar(hashAndToScalar(spendKey.toBytes()));
     return PrivateKey(spendKey, viewKey);
   }
 
   PrivateKey(this.privateSpendKey, this.privateViewKey);
   factory PrivateKey.fromHexes(String spendKeyStr, String viewKeyStr) {
-    final spendKey = ed25519.PrivateKey.fromHex(spendKeyStr);
-    final viewKey = ed25519.PrivateKey.fromHex(viewKeyStr);
+    final spendKey =
+        ed25519.Scalar.fromString(spendKeyStr, radix: 16, endian: Endian.big);
+    final viewKey =
+        ed25519.Scalar.fromString(viewKeyStr, radix: 16, endian: Endian.big);
     return PrivateKey(spendKey, viewKey);
   }
 
-  PublicKey get toPublic =>
-      PublicKey(privateSpendKey.publicKey, privateViewKey.publicKey);
+  ed25519.PublicKey get publicSpendKey => privateSpendKey.toPublicKey();
+  ed25519.PublicKey get publicViewKey => privateViewKey.toPublicKey();
 
-  ed25519.PublicKey get publicSpendKey => privateSpendKey.publicKey;
-  ed25519.PublicKey get publicViewKey => privateViewKey.publicKey;
-
-  String get privateSpendKeyHex => privateSpendKey.keyAsHex;
-  String get privateViewKeyHex => privateViewKey.keyAsHex;
+  String get privateSpendKeyHex =>
+      privateSpendKey.toHex(outLen: 64, endian: Endian.big);
+  String get privateViewKeyHex =>
+      privateViewKey.toHex(outLen: 64, endian: Endian.big);
   String get publicSpendKeyHex => publicSpendKey.asHex;
   String get publicViewKeyHex => publicViewKey.asHex;
 
   String getAddress({Network network = Network.mainnet}) =>
-      toPublic.getAddress(network: network);
+      publicKey.getAddress(network: network);
 
   /// = Hs(8aR||i)
   BigInt computeTxSharedSecretFromTxPubKey(Point25519 R, int outputIndex) {
     final Di = R
-        .multiplyScalar(privateViewKey.keyAsBigInt)
+        .multiplyScalar(privateViewKey.value)
         .multiplyScalar(BigInt.from(8));
     final fiPreHash = Uint8List.fromList(
         Di.asBytes.toList()..addAll(encodeVarInt(outputIndex)));
